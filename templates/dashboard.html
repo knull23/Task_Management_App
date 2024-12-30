@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Dashboard</h1>
+        <nav>
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('calendar') }}">Calendar</a>
+            <a href="{{ url_for('achievement') }}">Achievement</a>
+            <a href="{{ url_for('analytics') }}">Analytics</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Personalized Greeting -->
+        <section class="greeting-message">
+            <h2>Hello, {{ username }}! 👋</h2>
+            <p>Welcome back to your dashboard. Here is an overview of your tasks.</p>
+        </section>
+
+        <!-- Task Overview Section -->
+        <section class="task-overview">
+            <h2>Task Overview</h2>
+            <div class="overview-stats">
+                <p><strong>Pending Tasks:</strong> {{ pending_tasks }}</p>
+                <p><strong>Completed Tasks:</strong> {{ completed_tasks }}</p>
+                <p><strong>Total Tasks:</strong> {{ total_tasks }}</p>
+            </div>
+        </section>
+
+        <!-- Task List Section -->
+        <section class="task-list">
+            <h2>Your Tasks</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in tasks %}
+                        {% if not task.is_deleted%}
+                        <tr>
+                            <td>{{ task.title }}</td>
+                            <td>{{ task.description }}</td>
+                            <td>{{ task.due_date }}</td>
+                            <td>{{ task.status }}</td>
+                            <td>{{ task.priority }}</td>
+                            <td>
+                                {% if task.status != 'Completed' %}
+                            <!-- Mark as Completed Button -->
+                                <form action="{{ url_for('complete_task', task_id=task.id) }}" method="POST">
+                                    <button type="submit" class="btn btn-primary">Mark as Completed</button>
+                                </form>
+                                {% elif task.status == 'Completed' and not task.is_deleted %}
+                            <!-- Delete Task Button (Only visible for completed and non-deleted tasks) -->
+                                <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST">
+                                    <button type="submit" class="btn btn-danger">Delete Task</button>
+                                </form>
+                                {% else %}
+                            <!-- Task is completed but already deleted -->
+                                    <button class="btn btn-secondary" disabled>Task Deleted</button>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Create New Task Button -->
+        <a href="{{ url_for('create_task') }}" class="btn btn-success">Create New Task</a>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Task Management App</p>
+    </footer>
+</body>
+</html>

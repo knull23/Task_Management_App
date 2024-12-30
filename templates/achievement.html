@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achievements</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* General Container Styling */
+        .achievement-container {
+            margin: 20px auto;
+            max-width: 900px;
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .achievement-container h2 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        /* Stats Section */
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stats .stat-box {
+            flex: 1;
+            min-width: 150px;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stats .stat-box h3 {
+            margin-bottom: 5px;
+            font-size: 1.1em;
+            color: #444;
+        }
+
+        .stats .stat-box p {
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        /* Streak Section */
+        .streak {
+            margin-top: 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #ff9800;
+        }
+
+        .streak strong {
+            color: #d84315;
+        }
+
+        /* Early Tasks Section */
+        .early-tasks {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .early-tasks h3 {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .early-tasks ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .early-tasks li {
+            background: #e8f5e9;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .early-tasks li span {
+            font-weight: bold;
+        }
+
+        /* No Early Tasks Message */
+        .early-tasks p {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 1em;
+            color: #777;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .stats {
+                flex-direction: column;
+            }
+
+            .early-tasks li {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Achievements</h1>
+        <nav>
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('calendar') }}">Calendar</a>
+            <a href="{{ url_for('achievement') }}">Achievement</a>
+            <a href="{{ url_for('analytics') }}">Analytics</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="achievement-container">
+            <h2>Your Achievements</h2>
+
+            <!-- Stats Section -->
+            <div class="stats">
+                <div class="stat-box">
+                    <h3>Total Tasks</h3>
+                    <p>{{ total_tasks }}</p>
+                </div>
+                <div class="stat-box">
+                    <h3>Completed Tasks</h3>
+                    <p>{{ completed_tasks }}</p>
+                </div>
+                <div class="stat-box">
+                    <h3>Completion Rate</h3>
+                    <p>{{ completion_rate }}%</p>
+                </div>
+            </div>
+
+            <!-- Streak Section -->
+            <div class="streak">
+                🔥 Current Streak: <strong>{{ streak }} days</strong>
+            </div>
+
+            <div class="streak">
+                Max Streak: <strong> {{ max_streak }} days</strong>
+            </div>
+
+            <!-- Early Tasks Section -->
+            <div class="early-tasks">
+                <h3>✅ Tasks Completed Before Due Date:</h3>
+                {% if early_tasks %}
+                    <ul>
+                        {% for task in early_tasks %}
+                            <li>
+                                <span>{{ task.title }}</span>
+                                <span>🗓️ {{ task.completed_date.strftime('%Y-%m-%d') }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No tasks completed early yet. Keep pushing!</p>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Task Management App</p>
+    </footer>
+</body>
+</html>
