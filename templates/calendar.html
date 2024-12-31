@@ -9,6 +9,29 @@
         /* General Styling */
         body {
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        nav {
+            margin-top: 10px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
         }
 
         /* Calendar Container */
@@ -21,6 +44,26 @@
         h2 {
             color: #4CAF50;
             margin-bottom: 20px;
+        }
+
+        /* Navigation Buttons */
+        .calendar-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-navigation a {
+            text-decoration: none;
+            background: #4CAF50;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+        }
+
+        .calendar-navigation a:hover {
+            background: #388E3C;
         }
 
         /* Calendar Grid */
@@ -127,6 +170,15 @@
             color: #333;
         }
 
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 30px;
+            background: #4CAF50;
+            color: white;
+        }
+
         /* Responsive Design */
         @media (max-width: 600px) {
             .calendar {
@@ -142,8 +194,9 @@
     </style>
 </head>
 <body>
+    <!-- Header and Navigation -->
     <header>
-        <h1>Calendar</h1>
+        <h1>📅 Task Calendar</h1>
         <nav>
             <a href="{{ url_for('dashboard') }}">Dashboard</a>
             <a href="{{ url_for('calendar') }}">Calendar</a>
@@ -155,17 +208,26 @@
 
     <main>
         <div class="calendar-container">
-            <h2>📅 Task Calendar</h2>
+            <!-- Navigation Between Months -->
+            <div class="calendar-navigation">
+                <a href="{{ url_for('calendar', year=prev_year, month=prev_month) }}">← Previous</a>
+                <h2>{{ current_month }}/{{ current_year }}</h2>
+                <a href="{{ url_for('calendar', year=next_year, month=next_month) }}">Next →</a>
+            </div>
+
+            <!-- Calendar Grid -->
             <div class="calendar">
                 {% for day in calendar_days %}
                     <div class="day {% if day.is_today %}today{% endif %} {% if day.tasks %}has-task{% endif %}">
-                        <strong>{{ day.date }}</strong>
+                        <strong>{{ day.day }}</strong>
                         <div class="tasks">
                             {% if day.tasks %}
                                 {% for task in day.tasks %}
-                                    <div class="task-item {{ task.priority|lower }}">
-                                        📝 {{ task.title }}
-                                    </div>
+                                    {% if not task.is_completed and not task.is_deleted %}
+                                        <div class="task-item {{ task.priority|lower }}">
+                                            📝 {{ task.title }}
+                                        </div>
+                                    {% endif %}
                                 {% endfor %}
                             {% else %}
                                 <div class="no-task">No Tasks</div>

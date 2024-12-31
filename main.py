@@ -191,16 +191,24 @@ print("✅ Email scheduler thread started successfully.")
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        # Check if email and password are provided
+        if not email or not password:
+            flash('Please enter both email and password.', 'warning')
+            return render_template('login.html')
+
         user = User.query.filter_by(email=email).first()
 
+        # Validate user and password
         if user and check_password_hash(user.password, password):
             session['user_id'] = user.id
             flash('Login successful!', 'success')
             return redirect(url_for('dashboard'))
 
-        flash('Invalid credentials.', 'danger')
+        # Invalid credentials
+        flash('Invalid email or password. Please try again.', 'danger')
 
     return render_template('login.html')
 
@@ -291,7 +299,6 @@ def delete_task(task_id):
     return redirect(url_for('dashboard'))
 
 
-
 @app.route('/calendar')
 def calendar():
     user = get_current_user()  # Assuming this gets the current user
@@ -314,9 +321,16 @@ def calendar():
             }
             events.append(event)
 
-    # Generate calendar days for the current month
-    today = datetime.today()
-    month_start = today.replace(day=1)
+    # Handle month and year navigation
+    year = int(request.args.get('year', datetime.now().year))
+    month = int(request.args.get('month', datetime.now().month))
+    today = datetime.now()
+
+    # Calculate the first and last day of the month
+    month_start = datetime(year, month, 1)
+    next_month = (month_start.replace(day=28) + timedelta(days=4)).replace(day=1)
+    month_end = next_month - timedelta(days=1)
+
     calendar_days = []
 
     # Group tasks by their due date
@@ -325,29 +339,38 @@ def calendar():
         if task.due_date:
             tasks_by_date[task.due_date].append(task)
 
-    # Calculate the days of the current month
-    for i in range(31):  # Adjust dynamically based on the month
-        day = month_start + timedelta(days=i)
-        if day.month != today.month:
-            break
-
-        # Get tasks for the specific day
-        tasks_for_day = tasks_by_date.get(day.date(), [])
-
+    # Generate days for the current month
+    current_day = month_start
+    while current_day <= month_end:
+        tasks_for_day = tasks_by_date.get(current_day.date(), [])
         calendar_days.append({
-            'date': day.strftime('%d'),
-            'is_today': day.date() == today.date(),
+            'date': current_day.strftime('%Y-%m-%d'),
+            'day': current_day.strftime('%d'),
+            'is_today': current_day.date() == today.date(),
             'tasks': [{
                 'title': task.title,
                 'priority': task.priority,
                 'description': task.description
             } for task in tasks_for_day]
         })
+        current_day += timedelta(days=1)
+
+    # Month navigation logic
+    prev_month = (month_start - timedelta(days=1)).month
+    prev_year = (month_start - timedelta(days=1)).year
+    next_month = (month_end + timedelta(days=1)).month
+    next_year = (month_end + timedelta(days=1)).year
 
     return render_template(
         'calendar.html',
         events=events,
-        calendar_days=calendar_days
+        calendar_days=calendar_days,
+        current_year=year,
+        current_month=month,
+        prev_year=prev_year,
+        prev_month=prev_month,
+        next_year=next_year,
+        next_month=next_month
     )
 
 
@@ -469,8 +492,6 @@ if __name__ == '__main__':
 # the day of due date, user will receive an email
 # after due date task completed - it will show late completion
 # professional level css
-# the problem with calendar is it is not showing for next month,
-# so what it should do is after every month is completed
 # incorrect login , a red message should show up saying invalid login
 # create Procfile, requirements.txt and update .env file
 # make ui interface more effiecnt and good
