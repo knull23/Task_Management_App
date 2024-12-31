@@ -6,22 +6,51 @@ body {
 }
 
 header {
-    background-color: #4CAF50;
+    background: linear-gradient(to right, #4CAF50, #388E3C);
     color: white;
-    padding: 10px 0;
     text-align: center;
+    padding: 20px 0;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+header nav {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
 }
 
 header nav a {
-    color: white;
-    margin: 0 10px;
     text-decoration: none;
-    font-size: 16px;
+    color: white;
+    background: linear-gradient(to right, #66BB6A, #43A047);
+    padding: 10px 0;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    text-align: center;
 }
 
 header nav a:hover {
-    text-decoration: underline;
+    background: linear-gradient(to right, #43A047, #2E7D32);
+    transform: scale(1.05);
+}
+
+header nav a:active {
+    background: linear-gradient(to right, #2E7D32, #1B5E20);
+    color: #FFF;
 }
 
 main {
@@ -237,3 +266,77 @@ footer p {
 .btn-danger:hover {
     background-color: #c82333; /* Darker red on hover */
 }
+
+/* Header Styling */
+header {
+    background: linear-gradient(to right, #4CAF50, #388E3C);
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+/* Navigation Styling */
+header nav {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;  /* Ensure buttons fill available space */
+    gap: 15px;
+}
+
+header nav a {
+    text-decoration: none;
+    color: white;
+    background: linear-gradient(to right, #66BB6A, #43A047);
+    padding: 10px 0;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex; /* Use flex for equal height */
+    justify-content: center; /* Center text horizontally */
+    align-items: center; /* Center text vertically */
+    flex-grow: 1; /* Allow each button to grow equally and fill available space */
+    text-align: center;
+}
+
+/* Hover Effect */
+header nav a:hover {
+    background: linear-gradient(to right, #43A047, #2E7D32);
+    transform: scale(1.05);
+}
+
+/* Click Effect */
+header nav a:active {
+    background: linear-gradient(to right, #2E7D32, #1B5E20);
+    color: #FFF;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    header {
+        padding: 15px 0;
+    }
+
+    header h1 {
+        font-size: 22px;
+    }
+
+    header nav {
+        flex-direction: row;  /* Ensure buttons align horizontally */
+    }
+
+    header nav a {
+        width: auto;  /* Remove width restriction */
+        flex-grow: 1;  /* Make buttons grow equally */
+    }
+}
+
+

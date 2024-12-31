@@ -120,7 +120,9 @@ def send_welcome_email(user_email):
         print(f"Error while sending welcome email: {e}")
 
 
-# Function to send an email
+# -----------------------------
+# 📧 Function to Send an Email
+# -----------------------------
 def send_email(subject, body, recipient):
     email_message = f"Subject: {subject}\n\n{body}"
     try:
@@ -137,17 +139,25 @@ def send_email(subject, body, recipient):
         print(f"❌ General Error: {e}")
 
 
-# Function to send emails for tasks due today
+# -----------------------------------------------
+# 📅 Function to Send Emails for Due & Overdue Tasks
+# -----------------------------------------------
 def send_due_date_emails():
     with app.app_context():
         try:
             today = datetime.now().date()
+
+            # Fetch tasks that are due today and still pending
             tasks_due_today = Task.query.filter_by(due_date=today, status='Pending').all()
 
-            if not tasks_due_today:
-                print("ℹ️ No tasks due today.")
+            # Fetch tasks that are overdue and still pending
+            tasks_overdue = Task.query.filter(Task.due_date < today, Task.status == 'Pending').all()
+
+            if not tasks_due_today and not tasks_overdue:
+                print("ℹ️ No tasks due or overdue today.")
                 return
 
+            # Process tasks due today
             for task in tasks_due_today:
                 user = User.query.get(task.user_id)
                 if user:
@@ -159,11 +169,29 @@ def send_due_date_emails():
                         f"Best regards,\nTask Management Team"
                     )
                     send_email(subject, body, user.email)
+                    print(f"📧 Due Email sent for Task ID: {task.id} to {user.email}")
+
+            # Process overdue tasks
+            for task in tasks_overdue:
+                user = User.query.get(task.user_id)
+                if user:
+                    subject = f"Task Overdue: {task.title}"
+                    body = (
+                        f"Hi {user.username},\n\n"
+                        f"This is a reminder that your task '{task.title}' was due on {task.due_date}.\n"
+                        f"Please address this task as soon as possible.\n\n"
+                        f"Best regards,\nTask Management Team"
+                    )
+                    send_email(subject, body, user.email)
+                    print(f"📧 Overdue Email sent for Task ID: {task.id} to {user.email}")
+
         except Exception as e:
-            print(f"❌ Error while processing due date emails: {e}")
+            print(f"❌ Error while processing due/overdue emails: {e}")
 
 
-# Scheduler for Daily Email Notifications
+# --------------------------------------
+# ⏰ Scheduler for Daily Email Notifications
+# --------------------------------------
 def schedule_daily_emails():
     print("⏳ Email scheduler started...")
     last_run_date = None  # Track the last run date to prevent duplicate sends
@@ -174,7 +202,7 @@ def schedule_daily_emails():
 
         # Check if it's time to send emails (8:00 AM daily) and not already sent today
         if current_time.hour == 8 and current_time.minute == 0 and last_run_date != current_date:
-            print("📤 Triggering daily due date email notifications...")
+            print("📤 Triggering daily due and overdue task email notifications...")
             send_due_date_emails()
             last_run_date = current_date  # Update the last run date
             time.sleep(61)  # Wait 61 seconds to avoid multiple triggers within the same minute
@@ -182,10 +210,19 @@ def schedule_daily_emails():
         time.sleep(30)  # Check every 30 seconds
 
 
-# Start the background email scheduler in a separate thread
+# --------------------------------------------------
+# 🚀 Start the Background Email Scheduler in a Thread
+# --------------------------------------------------
 email_scheduler = threading.Thread(target=schedule_daily_emails, daemon=True)
 email_scheduler.start()
 print("✅ Email scheduler thread started successfully.")
+
+
+# -----------------------------------
+# 🛠️ Test Email Function (Optional)
+# -----------------------------------
+# Uncomment this line to send a test email manually.
+# send_email("Test Email", "This is a test email from your scheduler.", "your_email@example.com")
 
 # User Login
 @app.route('/login', methods=['GET', 'POST'])
@@ -490,8 +527,5 @@ if __name__ == '__main__':
 
 
 # the day of due date, user will receive an email
-# after due date task completed - it will show late completion
 # professional level css
-# incorrect login , a red message should show up saying invalid login
-# create Procfile, requirements.txt and update .env file
 # make ui interface more effiecnt and good
