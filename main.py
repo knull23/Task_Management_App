@@ -344,7 +344,7 @@ def calendar():
         return redirect(url_for('login'))
 
     # Fetch tasks from the database
-    tasks = Task.query.filter_by(user_id=user.id, is_deleted=False).all()
+    tasks = Task.query.filter_by(user_id=user.id, is_deleted=False, status='Pending').all()
 
     # Prepare events for the calendar
     events = []
